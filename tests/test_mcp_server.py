@@ -5,7 +5,6 @@ Tests for the MCP server — verifies that JSON-RPC request handling
 works correctly without needing a live stdio connection.
 """
 
-import json
 import sys
 import os
 
