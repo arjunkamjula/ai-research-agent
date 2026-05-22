@@ -8,7 +8,6 @@ in the persistent local vector store.
 
 import os
 from functools import lru_cache
-from pathlib import Path
 
 import chromadb
 from chromadb.config import Settings
