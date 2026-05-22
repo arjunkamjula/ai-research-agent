@@ -169,6 +169,47 @@ Returns last 20 agent runs with question, answer, tool sequence, and token usage
 
 ---
 
+## MCP Server
+
+The agent's tools are also exposed as a Model Context Protocol (MCP) server. This lets any MCP-compatible client — Claude Desktop, other LLM systems — call the same tools directly without going through the FastAPI layer.
+
+MCP uses JSON-RPC 2.0 over stdio. The server reads requests from stdin and writes responses to stdout.
+
+### Run standalone
+
+```bash
+python mcp_server/server.py
+```
+
+### Connect from Claude Desktop
+
+Add to `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "research-agent": {
+      "command": "python",
+      "args": ["/absolute/path/to/mcp_server/server.py"]
+    }
+  }
+}
+```
+
+Once connected, Claude Desktop can call `web_search`, `document_lookup`, `python_executor`, and `calculator` directly as MCP tools.
+
+### How it works
+
+The server handles three MCP methods:
+
+- `initialize` — handshake, returns server capabilities and protocol version
+- `tools/list` — returns the four available tools with their input schemas
+- `tools/call` — executes the named tool with provided arguments and returns the result
+
+Notifications (fire-and-forget messages with no `id`) are silently ignored per MCP spec.
+
+---
+
 ## Project Structure
 
 ```
@@ -191,8 +232,11 @@ ai-research-agent/
 │   └── schemas/
 │       ├── request.py           AgentRequest Pydantic model
 │       └── response.py          AgentResponse Pydantic model
+├── mcp_server/
+│   └── server.py            MCP server — exposes tools over JSON-RPC stdio
 ├── tests/
 │   ├── test_tools.py
+│   ├── test_mcp_server.py
 │   └── test_agent.py
 ├── .github/workflows/ci.yml
 ├── .env.example

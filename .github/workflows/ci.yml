@@ -36,7 +36,7 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       - run: pip install -r requirements.txt
-      - run: pytest tests/test_tools.py -v --tb=short
+      - run: pytest tests/test_tools.py tests/test_mcp_server.py -v --tb=short
 
   docker:
     name: Docker build
